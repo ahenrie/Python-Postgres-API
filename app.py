@@ -4,24 +4,24 @@ from flask import Flask, request, jsonify
 from sqlalchemy import create_engine, ForeignKey, Column, String, INTEGER, CHAR, Identity, Date
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
-from dockerconfig import create_postgres_container, destroy_container
+#from dockerconfig import create_postgres_container, destroy_container
 import re
 
 #Create flask app
 app = Flask(__name__)
 
 #Create database
-container = create_postgres_container()
+#container = create_postgres_container()
 
 #Create connection
-engine = create_engine("postgresql://postgres:password@localhost:5432/your_database_name")
+engine = create_engine("postgresql://db:password@db:5432/Customers")
 Session = sessionmaker(bind=engine)
 session = Session()
 
 Base = declarative_base()
 
 class Customer(Base):
-    __tablename__ = 'Cusotmers'
+    __tablename__ = 'Customers'
 
     #Columns, names, and their datatypes
     id = Column('id', INTEGER, primary_key=True)
@@ -47,7 +47,7 @@ class customerAPI:
         self.create_endpoints()
 
     def create_endpoints(self):
-        @self.app.route("/cusotmers", methods=["POST"])
+        @self.app.route("/customers", methods=["POST"])
         def create_customer():
             customers = load_customers_from_json("customers.json")
 
@@ -123,7 +123,7 @@ class customerAPI:
 
                 return jsonify({"message":"Customer updated."})
         
-        @self.app.route("/customers/<int:customer_id", methods = ["DELETE"])
+        @self.app.route("/customers/<int:customer_id>", methods = ["DELETE"])
         def delete_customer(customer_id):
             customer = session.query(Customer).get(customer_id)
 
@@ -138,7 +138,9 @@ class customerAPI:
 
 def main():
     Base.metadata.create_all(engine)
-    api = customerAPI()
-    app.run()
+    api = customerAPI(app)
+    app.run(host="0.0.0.0", port=5000)
+
 if __name__ == "__main__":
     main()
+    
