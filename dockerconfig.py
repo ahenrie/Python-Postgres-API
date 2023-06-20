@@ -1,3 +1,5 @@
+#SAMPLE FILE -> Usefull if we wanted to add function for docker to main.
+
 import subprocess
 
 def create_postgres_container():
@@ -7,3 +9,4 @@ def create_postgres_container():
 def destroy_container():
 # Stop and remove the PostgreSQL container using Docker Compose
     subprocess.run(['docker-compose', 'down'])
+
