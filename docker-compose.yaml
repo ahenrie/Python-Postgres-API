@@ -1,11 +1,14 @@
-version: '3.8'
+version: '3.2'
 
 services:
   postgres:
     image: postgres
+    hostname: db
     restart: always
     environment:
       POSTGRES_PASSWORD: password
+      POSTGRES_USER: db
+      POSTGRES_DB: Customers
     ports:
       - 5432:5432
     volumes:
