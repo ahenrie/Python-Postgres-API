@@ -1,3 +1,4 @@
+#How the program started. Initially, it was going to use the terminal to get customer information, but the API would have been somewhat useless.
 from typing import Any
 from flask import Flask, request, jsonify
 from sqlalchemy import create_engine, ForeignKey, Column, String, INTEGER, CHAR, Identity, Date
