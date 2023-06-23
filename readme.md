@@ -48,27 +48,3 @@ To use the program, follow these steps:
 4. Open a terminal or command prompt in the project directory.
 5. Run the following command to start the Docker containers:
 6. Once the containers are up and running, you can use `curl` or any other API testing tool to interact with the API using the provided endpoints.
-
-## Test `curl` Commands
-Here are some `curl` commands to test the API endpoints:
-
-1. Retrieve all customers:
-curl http://localhost:5000/customers
-
-
-2. Retrieve a specific customer by ID (replace `<customer_id>` with the actual ID):
-curl -X POST -H "Content-Type: application/json" -d @customers.json http://localhost:5000/customers
-
-3. Create a new customer using data from a JSON file (`customers.json`):
-curl -X POST -H "Content-Type: application/json" -d @customers.json http://localhost:5000/customers
-
-4. Update an existing customer by ID (replace `<customer_id>` with the actual ID and provide the updated JSON data):
-curl -X PUT -H "Content-Type: application/json" -d @updated_customer.json http://localhost:5000/customers/<customer_id>
-
-5. Delete a customer by ID (replace `<customer_id>` with the actual ID):
-curl -X DELETE http://localhost:5000/customers/<customer_id>
-
-
-Note: Make sure to replace `<customer_id>` with the actual customer ID and provide the correct JSON data in the requests.
-
-That's it! You can use these `curl` commands to test the API endpoints and interact with the program.
