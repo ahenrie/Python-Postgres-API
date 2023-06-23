@@ -7,13 +7,10 @@ from sqlalchemy.orm import sessionmaker
 #from dockerconfig import create_postgres_container, destroy_container
 import re
 
-#Create flask app
+#create flask app
 app = Flask(__name__)
 
-#Create database
-#container = create_postgres_container()
-
-#Create connection
+#create connection
 engine = create_engine("postgresql://db:password@db:5432/Customers")
 Session = sessionmaker(bind=engine)
 session = Session()
@@ -23,7 +20,7 @@ Base = declarative_base()
 class Customer(Base):
     __tablename__ = 'Customers'
 
-    #Columns, names, and their datatypes
+    #columns, names, and their datatypes
     id = Column('id', INTEGER, primary_key=True)
     first_name = Column("First Name", String)
     last_name = Column("Last Name", String)
@@ -34,7 +31,7 @@ class Customer(Base):
     state = Column("State", String)
     zip = Column("Zip", String)
 
-#Load the data from json
+#load the data from json
 def load_customers_from_json(filename):
     with open(filename, 'r') as file:
         data = json.load(file)
@@ -46,6 +43,7 @@ class customerAPI:
         self.app = app
         self.create_endpoints()
 
+######################UPLOAD customers.json INTO DATABASE######################
     def create_endpoints(self):
         @self.app.route("/customers", methods=["POST"])
         def create_customer():
@@ -72,29 +70,49 @@ class customerAPI:
 
                 session.add(customer)
                 session.commit()
-            
             return jsonify({"message":"Customers created"})
 
+######################GET BY ID OR ALL ROUTE######################
         @self.app.route("/customers", methods=["GET"])
-        def get_customers():
-            customers = session.query(Customer).all()
-            customer_list = []
+        @self.app.route("/customers/<int:customer_id>", methods=["GET"])
+        def get_customers(customer_id=None):
+            if customer_id:
+            #fetch a single customer by ID
+                customer = session.query(Customer).get(customer_id)
+                if not customer:
+                    return jsonify({"message": "Customer not found."}), 404
 
-            for customer in customers:
                 customer_data = {
-                    "id":customer.id,
-                    "first_name":customer.first_name,
-                    "last_name":customer.last_name,
-                    "email":customer.email,
-                    "street_add":customer.street_add,
-                    "city":customer.city,
-                    "state":customer.state,
-                    "zip":customer.zip
+                    "id": customer.id,
+                    "first_name": customer.first_name,
+                    "last_name": customer.last_name,
+                    "email": customer.email,
+                    "street_add": customer.street_add,
+                    "city": customer.city,
+                    "state": customer.state,
+                    "zip": customer.zip
                 }
-                customer_list.append(customer_data)
+                return jsonify(customer_data)
+            else:
+            #fetch all customers
+                customers = session.query(Customer).all()
+                customer_list = []
 
-            return jsonify(customers=customer_list)
-        
+                for customer in customers:
+                    customer_data = {
+                        "id": customer.id,
+                        "first_name": customer.first_name,
+                        "last_name": customer.last_name,
+                        "email": customer.email,
+                        "street_add": customer.street_add,
+                        "city": customer.city,
+                        "state": customer.state,
+                        "zip": customer.zip
+                    }
+                    customer_list.append(customer_data)
+                return jsonify(customers=customer_list)
+
+######################UPDATE BY ID  ROUTE######################        
         @self.app.route("/customers/<int:customer_id>", methods = ["PUT"])
         def update_customer(customer_id):
             customer = session.query(Customer).get(customer_id)
@@ -120,20 +138,24 @@ class customerAPI:
                 customer.zip = zip
             
                 session.commit()
-
                 return jsonify({"message":"Customer updated."})
-        
-        @self.app.route("/customers/<int:customer_id>", methods = ["DELETE"])
-        def delete_customer(customer_id):
-            customer = session.query(Customer).get(customer_id)
 
-            if not customer:
-                return jsonify({"message":"Customer not found."}), 404
-            
-            session.delete(customer)
+######################DELETE BY ID OR ALL ROUTE######################
+        @self.app.route("/customers", methods=["DELETE"])
+        @self.app.route("/customers/<int:customer_id>", methods=["DELETE"])
+        def delete_customer(customer_id=None):
+            if customer_id is not None:
+            #delete a single customer by ID
+                customer = session.query(Customer).get(customer_id)
+                if not customer:
+                    return jsonify({"message": "Customer not found."}), 404
+                session.delete(customer)
+            else:
+            #delete all customers
+                session.query(Customer).delete()
+
             session.commit()
-
-            return jsonify({"message": "Customer has been deleted."})
+            return jsonify({"message": "Customer(s) deleted."})
 
 
 def main():
@@ -143,4 +165,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-    
