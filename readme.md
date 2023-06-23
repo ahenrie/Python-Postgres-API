@@ -14,20 +14,20 @@ You can change the customer_id in the URL to test the API route on other records
 ## Testing with CURL
   The following curl commands will test all the API routes on the database.
 
-# Upload all Customers in the Json "customers.json [POST]"
-`curl -X POST -H "Content-Type: application/json" -d @customers.json http://localhost:5000/customers`
+  ### Upload all Customers in the Json "customers.json [POST]"
+  `curl -X POST -H "Content-Type: application/json" -d @customers.json http://localhost:5000/customers`
 
-# View all Records in Database [GET]
-`curl -X GET http://localhost:5000/customers`
+  ### View all Records in Database [GET]
+  `curl -X GET http://localhost:5000/customers`
 
-# View Record by ID [GET]
-`curl -X GET http://localhost:5000/customers/<customer_id>` --> Ex: `curl -X GET http://localhost:5000/customers/1`
+  ### View Record by ID [GET]
+  `curl -X GET http://localhost:5000/customers/<customer_id>` --> Ex: `curl -X GET http://localhost:5000/customers/1`
 
-# Update Record by ID [PUT]
-`./test_update.sh` --> `curl -X PUT -H "Content-Type: application/json" -d "$DATA" "$API_URL"`
+  ### Update Record by ID [PUT]
+  `./test_update.sh` --> `curl -X PUT -H "Content-Type: application/json" -d "$DATA" "$API_URL"`
 
-# Delete all Records [DELETE]
-`curl -X DELETE http://localhost:5000/customers`
+  ### Delete all Records [DELETE]
+  `curl -X DELETE http://localhost:5000/customers`
 
-# Delete Record by ID [DELETE]
-`curl -X DELETE http://localhost:5000/customers/<customer_id>` --> `curl -X DELETE http://localhost:5000/customers/1`
+  #### Delete Record by ID [DELETE]
+  `curl -X DELETE http://localhost:5000/customers/<customer_id>` --> `curl -X DELETE http://localhost:5000/customers/1`
