@@ -1,50 +1,33 @@
-## Install Instructions: 
-1. "pip install sqlalchemy psycopg2 flask docker"
-2. Docker can be install from here: https://www.docker.com/, if pip gives you trouble.
+## Install Instructions
+1. pip install sqlalchemy psycopg2 flask docker docker-compose (some of these are built in libraries,but it is good to make sure they are installed.)
+2. Docker can be install from here: https://www.docker.com/, if pip gives you trouble with docker.
 
-## Overview of the Program Components
+## Prelimnary Instructions and Notes
+Make sure that test_update.sh is executable. You can use `cd to/directory/with/program/files/` then `chmod +x test_update.sh`. In `test_update.sh`, the `API_URL` 
+has a customer id on the end of the url to tell the API which customer you would like to update. All the data is stored in a PostgresDB. As a result, customer_id is 
+an auto-incremented field. Keep that in mind as you delete and update records in the database. The `test_update.sh` us meant to update the first record with the customer_id of 1.
+You can change the customer_id in the URL to test the API route on other records. 
 
-### `app.py`
-The `app.py` file is the main Flask application file. It defines the routes and endpoints for the API and manages the interaction with the database.
+## Running Docker and Starting the DB
+ `sudo docker-compose up --build` builds the container containging the PostgresDB. Use `CTRL-C` or `sudo docker-compose down` to stop the container. 
 
-- It imports the necessary modules and libraries, including Flask, SQLAlchemy, and JSON.
-- It creates a Flask application instance.
-- It creates a SQLAlchemy engine to connect to the PostgreSQL database.
-- It defines the `Customer` model as a SQLAlchemy declarative base class representing the `Customers` table in the database.
-- It defines a function `load_customers_from_json()` to load customer data from a JSON file.
-- It defines a class `customerAPI` that represents the customer API and contains methods for creating, retrieving, updating, and deleting customers.
-- The `create_endpoints()` method within the `customerAPI` class sets up the API endpoints using Flask's `@app.route` decorator.
-- It defines a `main()` function that creates the necessary database tables and runs the Flask application.
+## Testing with CURL
+  The following curl commands will test all the API routes on the database.
 
-### `docker-compose.yaml`
-The `docker-compose.yaml` file is a YAML configuration file used to define and run multiple Docker containers for the PostgreSQL database and the Flask application.
+# Upload all Customers in the Json "customers.json [POST]"
+`curl -X POST -H "Content-Type: application/json" -d @customers.json http://localhost:5000/customers`
 
-- It specifies the version of Docker Compose and the services to be created.
-- It defines the `postgres` service using the `postgres` image, sets environment variables for the PostgreSQL container, maps the container port 5432 to the host, and creates a volume for persisting data.
-- It defines the `app` service using a custom Dockerfile, restarts the container always, maps the container port 5000 to the host, and specifies a dependency on the `postgres` service.
+# View all Records in Database [GET]
+`curl -X GET http://localhost:5000/customers`
 
-### `Dockerfile`
-The `Dockerfile` is a text file used to build a Docker image for the Flask application.
+# View Record by ID [GET]
+`curl -X GET http://localhost:5000/customers/<customer_id>` --> Ex: `curl -X GET http://localhost:5000/customers/1`
 
-- It specifies the base image as `python:3.8-slim-buster`.
-- It sets the working directory to `/code`.
-- It copies the `requirements.txt` file to the working directory.
-- It installs the Python dependencies specified in `requirements.txt`.
-- It copies all the files from the current directory to the working directory.
-- It exposes port 5000.
-- It specifies the command to run the Flask application.
+# Update Record by ID [PUT]
+`./test_update.sh` --> `curl -X PUT -H "Content-Type: application/json" -d "$DATA" "$API_URL"`
 
-### `requirements.txt`
-The `requirements.txt` file lists the Python dependencies required by the Flask application.
+# Delete all Records [DELETE]
+`curl -X DELETE http://localhost:5000/customers`
 
-- It specifies the required versions of Flask, SQLAlchemy, pydantic, and uvicorn.
-
-## Usage
-To use the program, follow these steps:
-
-1. Make sure you have Docker and Docker Compose installed on your system.
-2. Create a `customers.json` file containing the customer data.
-3. Update the necessary configurations in the `app.py`, `docker-compose.yaml`, and `Dockerfile` files if needed.
-4. Open a terminal or command prompt in the project directory.
-5. Run the following command to start the Docker containers:
-6. Once the containers are up and running, you can use `curl` or any other API testing tool to interact with the API using the provided endpoints.
+# Delete Record by ID [DELETE]
+`curl -X DELETE http://localhost:5000/customers/<customer_id>` --> `curl -X DELETE http://localhost:5000/customers/1`
